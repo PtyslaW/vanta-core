@@ -34,28 +34,46 @@ function loadStart(): Record<string, number> {
   }
 }
 
+const ROLE_PATTERNS = [
+  /^member(\s*\(\d+\))?$/i,
+  /^senior(\s*\(\d+\))?$/i,
+  /^president(\s*\(\d+\))?$/i,
+  /^vice president(\s*\(\d+\))?$/i,
+  /^elder(\s*\(\d+\))?$/i,
+  /^leader(\s*\(\d+\))?$/i,
+  /^co-leader(\s*\(\d+\))?$/i,
+  /^left$/i,
+];
+
+function isRoleOrMeta(line: string): boolean {
+  if (!line || line.startsWith('#')) return true;
+  if (/^#?\d+$/.test(line)) return true;
+  return ROLE_PATTERNS.some(re => re.test(line.trim()));
+}
+
 function parseBrawlifyData(rawText: string): Array<{ name: string; tag: string; trophies: number }> {
   const lines = rawText.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
   const parsed: Array<{ name: string; tag: string; trophies: number }> = [];
+  const seenTags = new Set<string>();
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     if (!line.startsWith('#')) continue;
 
     const tag = line.toUpperCase();
-    let name = '';
-    let trophies = 0;
+    if (seenTags.has(tag)) continue;
 
-    for (let j = i - 1; j >= Math.max(0, i - 5); j--) {
+    let name = '';
+    for (let j = i - 1; j >= Math.max(0, i - 6); j--) {
       const candidate = lines[j];
-      const upper = candidate.toUpperCase();
-      if (!candidate || candidate.startsWith('#')) continue;
-      if (upper === 'LEFT' || upper === 'MEMBER' || upper === 'SENIOR' || upper === 'PRESIDENT' || upper === 'VICE PRESIDENT') continue;
-      if (/^#?\d+$/.test(candidate)) continue;
+      if (isRoleOrMeta(candidate)) continue;
       name = candidate;
       break;
     }
 
+    if (!name || name.toLowerCase() === 'unknown') continue;
+
+    let trophies = 0;
     for (let j = i + 1; j < Math.min(i + 15, lines.length); j++) {
       if (lines[j].toUpperCase() === 'TROPHIES') {
         for (let k = j + 1; k < Math.min(j + 4, lines.length); k++) {
@@ -69,7 +87,8 @@ function parseBrawlifyData(rawText: string): Array<{ name: string; tag: string; 
       if (trophies > 0) break;
     }
 
-    if (name && trophies > 0) {
+    if (trophies > 0) {
+      seenTags.add(tag);
       parsed.push({ name, tag, trophies });
     }
   }
