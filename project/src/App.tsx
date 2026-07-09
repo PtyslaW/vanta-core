@@ -1,9 +1,10 @@
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
-import { Trophy, Mail, Calendar, Home, Menu, X, Crown } from 'lucide-react';
+import { Trophy, Mail, Calendar, Hop as Home, Menu, X, Crown, GraduationCap } from 'lucide-react';
 import { useState } from 'react';
 import Leaderboard from './pages/Leaderboard';
 import Announcements from './pages/Announcements';
 import Contests from './pages/Contests';
+import Academy from './pages/Academy';
 
 function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -13,6 +14,7 @@ function App() {
     { to: '/leaderboard', icon: Trophy, label: 'Ranking' },
     { to: '/announcements', icon: Mail, label: 'Ogloszenia' },
     { to: '/contests', icon: Calendar, label: 'Konkursy' },
+    { to: '/academy', icon: GraduationCap, label: 'Akademia' },
   ];
 
   return (
@@ -98,6 +100,7 @@ function App() {
             <Route path="/leaderboard" element={<Leaderboard mode="full" />} />
             <Route path="/announcements" element={<Announcements />} />
             <Route path="/contests" element={<Contests />} />
+            <Route path="/academy" element={<Academy />} />
           </Routes>
         </main>
 
