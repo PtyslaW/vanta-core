@@ -39,7 +39,11 @@ const TRUSTED_TAGS = [
   "2JQJ8L2P82",
   "G9PV29R22",
   "228YQ2YCC",
-  "GG0C92VJQ"
+  "GG0C92VJQ",
+  "8RL22C8VY",
+  "9JU92LJLC",
+  "92C2JC0LL",
+  "9LPGPRG9J"
 ];
 
 interface Props {
